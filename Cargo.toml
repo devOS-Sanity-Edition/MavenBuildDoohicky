@@ -4,3 +4,10 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+axum = "0.7.7"
+axum-github-webhook-extract = "0.2.0"
+dotenvy = "0.15.7"
+octocrab = "0.41.0"
+serde = { version = "1.0", features = ["derive"] }
+tokio = { version = "1.0", features = ["full"] }
+tracing-subscriber = "0.3.18"
