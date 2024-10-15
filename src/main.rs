@@ -2,9 +2,9 @@ use std::env;
 use std::sync::Arc;
 use axum::response::IntoResponse;
 use axum::Router;
-use axum::routing::get;
+use axum::routing::post;
 use axum_github_webhook_extract::{GithubEvent, GithubToken};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use tower_http::trace::TraceLayer;
 
 #[tokio::main]
@@ -25,7 +25,7 @@ async fn main() {
         .expect("Missing GITHUB_SECRET Environment Variable");
 
     let app = Router::new()
-        .route("/", get(root))
+        .route("/", post(root))
         .with_state(GithubToken(Arc::new(github_secret)))
         .layer(TraceLayer::new_for_http());
 
@@ -39,11 +39,23 @@ async fn main() {
     axum::serve(listener, app).await.unwrap();
 }
 
-#[derive(Debug, Deserialize)]
-struct Event {
-    action: String,
+/// A git commit in specific payload types.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
+pub struct Commit {
+    pub id: String,
+    pub message: String,
+    pub distinct: bool,
 }
 
-async fn root(GithubEvent(e): GithubEvent<Event>) -> impl IntoResponse {
-    e.action
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
+pub struct PushEventPayload {
+    pub before: String,
+    pub commits: Vec<Commit>,
+}
+
+async fn root(GithubEvent(e): GithubEvent<PushEventPayload>) -> impl IntoResponse {
+    println!("Got event: {:?}", e.commits);
+    e.before
 }
