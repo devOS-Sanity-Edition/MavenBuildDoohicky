@@ -1,20 +1,20 @@
 mod app;
 mod schema;
 
-use std::env;
-use std::sync::Arc;
+use crate::app::{App, DatabaseConnection};
 use axum::extract::State;
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
-use axum::Router;
 use axum::routing::post;
+use axum::Router;
 use axum_github_webhook_extract::{GithubEvent, GithubToken};
 use diesel::row::NamedRow;
 use diesel_async::RunQueryDsl;
 use diesel_async_migrations::{embed_migrations, EmbeddedMigrations};
 use serde::{Deserialize, Serialize};
+use std::env;
+use std::sync::Arc;
 use tower_http::trace::TraceLayer;
-use crate::app::{App, DatabaseConnection};
 
 pub const MIGRATIONS: EmbeddedMigrations = embed_migrations!("migrations/");
 
@@ -33,7 +33,7 @@ async fn main() {
     }
 
     dotenvy::dotenv().ok();
-    
+
     let app = App::new();
 
     {

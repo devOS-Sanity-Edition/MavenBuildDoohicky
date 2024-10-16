@@ -1,18 +1,18 @@
-use std::env;
-use axum::extract::{FromRef, FromRequestParts};
-use axum::http::StatusCode;
-use axum::http::uri::Parts;
-use deadpool::managed::{Object, Pool};
-use diesel_async::AsyncPgConnection;
-use diesel_async::pooled_connection::AsyncDieselConnectionManager;
 use crate::internal_error;
+use axum::extract::{FromRef, FromRequestParts};
+use axum::http::uri::Parts;
+use axum::http::StatusCode;
+use deadpool::managed::{Object, Pool};
+use diesel_async::pooled_connection::AsyncDieselConnectionManager;
+use diesel_async::AsyncPgConnection;
+use std::env;
 
 pub type DatabasePool = Pool<AsyncDieselConnectionManager<AsyncPgConnection>, Object<AsyncDieselConnectionManager<AsyncPgConnection>>>;
 pub type PooledConnection = Object<AsyncDieselConnectionManager<AsyncPgConnection>>;
 
 #[derive(Clone)]
 pub struct App {
-    pub db: DatabasePool
+    pub db: DatabasePool,
 }
 
 impl App {
