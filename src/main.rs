@@ -4,6 +4,7 @@ mod schema;
 use std::env;
 use std::sync::Arc;
 use axum::extract::State;
+use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use axum::Router;
 use axum::routing::post;
@@ -78,4 +79,12 @@ pub struct PushEventPayload {
 async fn root(GithubEvent(e): GithubEvent<PushEventPayload>) -> impl IntoResponse {
     println!("Got event: {:?}", e.commits);
     e.before
+}
+
+/// Utility function for mapping any error into a `500 Internal Server Error` response.
+fn internal_error<E>(err: E) -> (StatusCode, String)
+where
+    E: std::error::Error,
+{
+    (StatusCode::INTERNAL_SERVER_ERROR, err.to_string())
 }

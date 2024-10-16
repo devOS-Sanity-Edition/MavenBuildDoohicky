@@ -5,6 +5,7 @@ use axum::http::uri::Parts;
 use deadpool::managed::{Object, Pool};
 use diesel_async::AsyncPgConnection;
 use diesel_async::pooled_connection::AsyncDieselConnectionManager;
+use crate::internal_error;
 
 pub type DatabasePool = Pool<AsyncDieselConnectionManager<AsyncPgConnection>, Object<AsyncDieselConnectionManager<AsyncPgConnection>>>;
 pub type PooledConnection = Object<AsyncDieselConnectionManager<AsyncPgConnection>>;
@@ -44,7 +45,7 @@ where
         let conn: PooledConnection = pool
             .get()
             .await
-            .map_err(|err| (StatusCode::INTERNAL_SERVER_ERROR, err.to_string()))?;
+            .map_err(internal_error)?;
 
         Ok(Self(conn))
     }
