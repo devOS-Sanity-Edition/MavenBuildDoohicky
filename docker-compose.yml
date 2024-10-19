@@ -1,0 +1,13 @@
+services:
+  postgres:
+    image: postgres:latest
+    restart: no
+    user: 1000:1000
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
